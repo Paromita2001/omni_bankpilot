@@ -1,15 +1,12 @@
-# ui.py
-print("UI file started")
-
 from app import run_pipeline
 
-print("Imported run_pipeline")
+print("UI file started")
 
-if __name__ == "__main__":
-    print("Main block running")
+while True:
+    user_input = input("You: ")
 
-    response1 = run_pipeline("How much money do I have?")
-    print("Bot:", response1)
+    if user_input.lower() in ["exit", "quit"]:
+        break
 
-    response2 = run_pipeline("And last month?")
-    print("Bot:", response2)
+    response = run_pipeline(user_input)
+    print("Bot:", response)
