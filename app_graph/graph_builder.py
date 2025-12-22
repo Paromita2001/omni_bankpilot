@@ -1,17 +1,24 @@
 from pipeline.context_pipeline import build_context
+from pipeline.meaning_pipeline import run as meaning_pipeline
 from pipeline.intent_pipeline import detect_intent
-from app_graph.router import route  
+from app_graph.router import route
 
 
 class SimpleGraph:
     def invoke(self, data):
-        user_input = data["input"]  
+        user_input = data["input"]
 
         context = build_context(user_input, history=[])
-        intent = detect_intent(user_input, context)
-        response = route(intent, context)
 
-        return {"response": response}
+        meaning_text = meaning_pipeline(context)
+
+        intent = detect_intent(meaning_text)
+
+        response = route(intent, meaning_text)
+
+        return {
+            "response": response
+        }
 
 
 def build_graph():

@@ -19,7 +19,7 @@ def route(intent, context):
         return bank_agent(context)
 
     elif main_intent == "info":
-        return rag_agent(context)
+        return rag_agent(context, meaning)
 
     elif main_intent == "reminder":
         return reminder_agent(context)

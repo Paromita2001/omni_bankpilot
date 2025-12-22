@@ -1,20 +1,33 @@
-# agents/rag_agent.py
+from services.rag_loader import load_qa_files
+from services.text_utils import normalize
+from services.meaning_utils import meaning_to_rag_query
 
-# Temporary knowledge base (replace with your 6 Q&A)
-KB = {
-    "fd kya hota hai": "FD (Fixed Deposit) ek investment option hota hai jisme aap paisa fixed time ke liye bank me rakhte ho aur interest milta hai.",
-    "interest rate kya hai": "Current FD interest rate bank ke policy ke hisaab se vary karta hai.",
-    "bank timing kya hai": "Bank Monday se Friday, 9 AM se 5 PM tak open rehta hai.",
-}
+QA_DATA = load_qa_files()
 
-def handle(context):
-    """
-    Handles informational queries using simple Q&A matching
-    """
-    query = context.lower()
+def handle(context: str, meaning: dict):
+    # Use canonical meaning-based query
+    rag_query = meaning_to_rag_query(meaning)
 
-    for question, answer in KB.items():
-        if question in query:
-            return answer
+    if not rag_query:
+        return "I couldn't find this information in our knowledge base."
 
-    return "Sorry, is question ka answer abhi available nahi hai."
+    query = normalize(rag_query)
+    query_tokens = set(query.split())
+
+    best_match = None
+    best_score = 0
+
+    for item in QA_DATA:
+        question = normalize(item["question"])
+        question_tokens = set(question.split())
+
+        score = len(query_tokens & question_tokens)
+
+        if score > best_score:
+            best_score = score
+            best_match = item
+
+    if best_match and best_score >= 1:
+        return best_match["answer"]
+
+    return "I couldn't find this information in our knowledge base."

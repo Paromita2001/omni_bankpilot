@@ -1,27 +1,75 @@
-# pipeline/intent_pipeline.py
+"""
+Intent Engine
+-------------
+Input  : Structured meaning from meaning_pipeline
+Output : System intent + sub_intent
+Language : English only
+"""
 
-def detect_intent(user_input, context):
-    text = user_input.lower()
+def run(meaning: dict) -> dict:
+    """
+    meaning example:
+    {
+        "action": "check",
+        "object": "balance",
+        "owner": "self"
+    }
+    """
 
-    # Informational queries → RAG
-    if "fd" in text or "fixed deposit" in text or "interest" in text:
+    action = meaning.get("action", "unknown")
+    obj = meaning.get("object", "unknown")
+    owner = meaning.get("owner", "unknown")
+
+    # =========================
+    # BANK ACTIONS (SECURE)
+    # =========================
+
+    # ---- Check balance ----
+    if action == "check" and owner == "self" and obj == "balance":
         return {
-            "intent": "info"
+            "intent": "bank_action",
+            "sub_intent": "balance_check"
         }
 
-    # Reminder related
-    if "remind" in text or "emi" in text or "bill" in text:
+    # ---- Transaction history ----
+    if action == "check" and owner == "self" and obj == "transaction_history":
         return {
-            "intent": "reminder"
+            "intent": "bank_action",
+            "sub_intent": "transaction_history"
         }
 
-    # Banking actions
-    if "balance" in text or "transfer" in text or "account" in text:
+    # ---- Money transfer (OTP required) ----
+    if action == "transfer" and owner == "self":
         return {
-            "intent": "bank_action"
+            "intent": "bank_action",
+            "sub_intent": "money_transfer"
         }
 
-    # Fallback
+    # =========================
+    # INFORMATIONAL (RAG)
+    # =========================
+
+    if action == "explain":
+        return {
+            "intent": "info",
+            "sub_intent": obj
+        }
+
+    # =========================
+    # REMINDER (OPTIONAL)
+    # =========================
+
+    if action == "set_reminder":
+        return {
+            "intent": "reminder",
+            "sub_intent": obj
+        }
+
+    # =========================
+    # FALLBACK / UNKNOWN
+    # =========================
+
     return {
-        "intent": "fallback"
+        "intent": "fallback",
+        "sub_intent": "unknown"
     }

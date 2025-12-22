@@ -1,12 +1,13 @@
 # pipeline/context_pipeline.py
 
-def build_context(user_input, history):
+def build_context(clean_text: str, history=None):
     """
-    Builds conversational context using previous messages
+    Very simple context builder for now.
     """
-    if not history:
-        return user_input
+    history = history or []
 
-    last_turns = history[-4:]  # last 2 user-bot exchanges
-    context = " | ".join(last_turns)
-    return f"{context} | Current: {user_input}"
+    if not history:
+        return clean_text
+
+    recent = " ".join(history[-4:])
+    return f"{recent} {clean_text}"
