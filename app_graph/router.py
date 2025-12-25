@@ -1,28 +1,51 @@
 # app_graph/router.py
 
-from agents.bank_agent import handle as bank_agent
+from agents.bank_agent import BankAgent
 from agents.rag_agent import handle as rag_agent
 from agents.reminder_agent import handle as reminder_agent
 from agents.fallback_agent import handle as fallback_agent
 
+# Single instance (important for state consistency)
+bank_agent = BankAgent()
 
-def route(intent, context):
+
+def route(
+    *,
+    user_id: int,
+    intent: dict,
+    context: str,
+    meaning: dict | None = None,
+    entities: dict | None = None
+):
     """
-    Routes the request to the correct agent
+    Central router that sends request to correct agent
     """
-    # intent is a dictionary like:
-    # {"intent": "bank_action", "sub_intent": "balance_check"}
 
     main_intent = intent.get("intent")
 
+    # =========================
+    # BANK ACTIONS (SECURE)
+    # =========================
     if main_intent == "bank_action":
-        return bank_agent(context)
+        return bank_agent.handle(
+            user_id=user_id,
+            intent=intent,
+            entities=entities      # ✅ MUST be `entities`
+        )
 
-    elif main_intent == "info":
-        return rag_agent(context, meaning)
+    # =========================
+    # INFORMATIONAL (RAG)
+    # =========================
+    if main_intent == "info":
+        return rag_agent(context)
 
-    elif main_intent == "reminder":
+    # =========================
+    # REMINDER AGENT
+    # =========================
+    if main_intent == "reminder":
         return reminder_agent(context)
 
-    else:
-        return fallback_agent(context)
+    # =========================
+    # FALLBACK
+    # =========================
+    return fallback_agent(context)

@@ -6,20 +6,24 @@ Output : System intent + sub_intent
 Language : English only
 """
 
-def run(meaning: dict) -> dict:
-    """
-    meaning example:
-    {
-        "action": "check",
-        "object": "balance",
-        "owner": "self"
-    }
-    """
+def run(meaning: dict, entities: dict | None = None) -> dict:
+
+    entities = entities or {}
+
+    # =========================
+    # OTP CONFIRMATION OVERRIDE
+    # =========================
+    if "otp" in entities:
+        return {
+            "intent": "bank_action",
+            "sub_intent": "money_transfer"
+        }
 
     action = meaning.get("action", "unknown")
     obj = meaning.get("object", "unknown")
     owner = meaning.get("owner", "unknown")
 
+    
     # =========================
     # BANK ACTIONS (SECURE)
     # =========================
@@ -32,7 +36,7 @@ def run(meaning: dict) -> dict:
         }
 
     # ---- Transaction history ----
-    if action == "check" and owner == "self" and obj == "transaction_history":
+    if action == "check" and owner == "self" and obj in ["transactions", "transaction_history"]:
         return {
             "intent": "bank_action",
             "sub_intent": "transaction_history"
@@ -44,6 +48,9 @@ def run(meaning: dict) -> dict:
             "intent": "bank_action",
             "sub_intent": "money_transfer"
         }
+    
+
+    
 
     # =========================
     # INFORMATIONAL (RAG)
@@ -56,17 +63,22 @@ def run(meaning: dict) -> dict:
         }
 
     # =========================
-    # REMINDER (OPTIONAL)
+    # REMINDER
     # =========================
 
-    if action == "set_reminder":
+    if action in ["set_reminder", "modify_reminder", "delete_reminder"]:
         return {
             "intent": "reminder",
-            "sub_intent": obj
+            "sub_intent": action
         }
-
+    # ---- OTP CONFIRMATION ----
+    if action == "confirm" and obj == "otp":
+        return {
+            "intent": "bank_action",
+            "sub_intent": "money_transfer"
+        }
     # =========================
-    # FALLBACK / UNKNOWN
+    # FALLBACK
     # =========================
 
     return {

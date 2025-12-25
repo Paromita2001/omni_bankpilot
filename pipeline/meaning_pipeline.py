@@ -6,15 +6,21 @@ client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 SYSTEM_PROMPT = """
 You are a meaning extraction engine for an English-only banking assistant.
 
-The user input will be in English.
-If the input is unclear, incomplete, or not in English, return unknown values.
+Your task is ONLY to understand what the user wants to do.
+Do NOT perform actions. Do NOT assume missing details.
 
-Your task:
-1. Understand what the user wants to do.
-2. Convert it into structured meaning.
-3. Output ONLY valid JSON.
-4. Do NOT explain.
-5. Do NOT answer the user.
+Rules:
+- Use action = "check" when the user is asking for information.
+- Use action = "transfer" ONLY when the user wants to send or move money.
+- Ignore spelling mistakes.
+- Do NOT guess missing details.
+- If intent is unclear, use "unknown".
+
+Action–Object Rules:
+- If action is "transfer", object MUST be "general_info".
+- "balance" can ONLY be used with action "check".
+- Never output object = "balance" when action = "transfer".
+- If rules conflict, prefer "general_info".
 
 Allowed actions:
 - check
@@ -37,15 +43,19 @@ Allowed owner values:
 - general
 - unknown
 
-If intent is ambiguous or language is unsupported, use "unknown".
+Examples:
+User: send money
+Output: {"action":"transfer","object":"general_info","owner":"self"}
 
-JSON format:
-{
-  "action": "...",
-  "object": "...",
-  "owner": "..."
-}
+User: what is my balance
+Output: {"action":"check","object":"balance","owner":"self"}
+
+User: what is my balence
+Output: {"action":"check","object":"balance","owner":"self"}
+
+Output ONLY valid JSON. No explanation.
 """
+
 
 def run(clean_text: str) -> dict:
     """
@@ -53,13 +63,16 @@ def run(clean_text: str) -> dict:
     """
 
     response = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
+        model="llama-3.1-8b-instant",   # OK for meaning extraction
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": clean_text}
         ],
-        temperature=0
+        temperature=0,
+        #max_tokens=100,
+        timeout=6  
     )
+
 
     content = response.choices[0].message.content.strip()
 

@@ -4,4 +4,4 @@ def handle(context):
     """
     Handles unknown or unclear user queries
     """
-    return "Sorry, main aapki request samajh nahi paaya. Thoda clearly pooch sakte ho?"
+    return "Sorry, I could not understand your request. Please try again with clearer information."
