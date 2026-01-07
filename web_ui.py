@@ -43,7 +43,7 @@
 
 #     # Login check
 #     if not SESSION["logged_in"]:
-#         msg = "⚠️ Please login first."
+#         msg = "Please login first."
 #         new_history = history + [{"role": "assistant", "content": msg}]
 #         return new_history, "", new_history
 
@@ -71,7 +71,7 @@
 
 #     # -------- LOGIN --------
 #     with gr.Column(visible=True) as login_panel:
-#         gr.Markdown("### 🔐 Login")
+#         gr.Markdown("###  Login")
 #         email = gr.Textbox(label="Email")
 #         password = gr.Textbox(label="Password", type="password")
 #         login_btn = gr.Button("Login")
@@ -143,7 +143,7 @@
 #         history = []
 
 #     if not SESSION["logged_in"]:
-#         msg = "⚠️ Please login first."
+#         msg = " Please login first."
 #         new_history = history + [{"role": "assistant", "content": msg}]
 #         audio = text_to_speech(msg)
 #         return new_history, "", new_history, audio
@@ -166,7 +166,7 @@
 # # =========================
 # with gr.Blocks(title="Omni BankPilot – Text + TTS") as demo:
 
-#     gr.Markdown("## 🏦 Omni BankPilot – Text + Voice Output")
+#     gr.Markdown("## Omni BankPilot – Text + Voice Output")
 
 #     # -------- LOGIN --------
 #     with gr.Column(visible=True) as login_panel:
@@ -186,7 +186,7 @@
 #         send_btn = gr.Button("Send")
 
 #         audio_out = gr.Audio(
-#             label="🔊 Assistant speaks",
+#             label=" Assistant speaks",
 #             autoplay=True,
 #             interactive=False
 #         )
@@ -252,7 +252,7 @@ def handle_text(user_text, history):
         history = []
 
     if not SESSION["logged_in"]:
-        msg = "⚠️ Please login first."
+        msg = "Please login first."
         new_history = history + [{"role": "assistant", "content": msg}]
         audio = text_to_speech(msg)
         return new_history, "", new_history, audio
@@ -278,7 +278,7 @@ def handle_voice(audio_path, history):
         history = []
 
     if not SESSION["logged_in"]:
-        msg = "⚠️ Please login first."
+        msg = "Please login first."
         new_history = history + [{"role": "assistant", "content": msg}]
         audio = text_to_speech(msg)
         return new_history, new_history, audio
