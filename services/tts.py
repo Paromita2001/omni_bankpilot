@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # services/tts.py
 
 import pyttsx3
@@ -39,24 +38,3 @@ def text_to_speech(text: str):
         engine.stop()
 
     return file_path
-=======
-import pyttsx3
-import tempfile
-import os
-
-def text_to_speech(text):
-    if not text:
-        return None
-
-    engine = pyttsx3.init()   # ✅ init per call (safe)
-    engine.setProperty("rate", 170)
-
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as f:
-        audio_path = f.name
-
-    engine.save_to_file(text, audio_path)
-    engine.runAndWait()
-    engine.stop()
-
-    return audio_path
->>>>>>> 92093a4197c705fd0ca1c769efdbddb3c4b08404
