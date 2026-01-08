@@ -22,7 +22,11 @@ GENERAL RULES
 - If intent is unclear, use action = "unknown".
 
 -------------------------
+<<<<<<< HEAD
 ACTION-OBJECT RULES
+=======
+ACTION–OBJECT RULES
+>>>>>>> 92093a4197c705fd0ca1c769efdbddb3c4b08404
 -------------------------
 - If action is "transfer", object MUST be "general_info".
 - "balance" can ONLY be used with action = "check".
@@ -102,6 +106,7 @@ User: show my transaction history
 Output:
 {"action":"check","object":"transaction_history","owner":"self"}
 
+<<<<<<< HEAD
 User: show my transaction history
 Output: {"action":"check","object":"transaction_history","owner":"self"}
 
@@ -114,6 +119,8 @@ Output: {"action":"check","object":"transaction_history","owner":"self"}
 User: recent transactions
 Output: {"action":"check","object":"transaction_history","owner":"self"}
 
+=======
+>>>>>>> 92093a4197c705fd0ca1c769efdbddb3c4b08404
 User: what is a savings account
 Output:
 {"action":"check","object":"general_info","owner":"general"}
